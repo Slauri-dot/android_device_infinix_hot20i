@@ -33,14 +33,18 @@ jobs:
         chmod a+x /usr/local/bin/repo
 
     - name: Sync TWRP Sources
+      env:
+        # Вот здесь мы «подключаем» наш секрет
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
       run: |
         mkdir twrp
         cd twrp
         git config --global user.name "Builder"
         git config --global user.email "builder@twrp.me"
-        # ЭТИ ДВЕ СТРОЧКИ ПРИНУДИТЕЛЬНО ВКЛЮЧАЮТ HTTPS
-        git config --global url."https://github.com/".insteadOf git://github.com/
-        git config --global advice.detachedHead false
+        
+        # Настраиваем Git на использование токена для всех запросов к GitHub
+        git config --global url."https://${GH_TOKEN}@github.com/".insteadOf https://github.com/
+        git config --global url."https://${GH_TOKEN}@github.com/".insteadOf git://github.com/
         
         /usr/local/bin/repo init --depth=1 -u https://github.com/Minimal-TWRP-Arm64/platform_manifest_twrp_aosp.git -b twrp-12.1
         /usr/local/bin/repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
