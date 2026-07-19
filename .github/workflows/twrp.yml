@@ -72,17 +72,23 @@ jobs:
         rm -rf ramdisk.cpio dtb extra magiskboot
 
     - name: Build Boot Image
-      # Принудительно заставляем этот шаг выполняться в bash, а не в sh
       shell: bash
       run: |
         export PATH=/usr/local/bin:$PATH
         cd twrp
         
+        # 1. Заглушка для embedded.mk (уже проверенная)
         mkdir -p build/make/target/product/
         touch build/make/target/product/embedded.mk
         
+        # 2. Хак-заглушка для vendor/omni, чтобы обойти ошибку
+        mkdir -p vendor/omni/config/
+        touch vendor/omni/config/common.mk
+        
         export ALLOW_MISSING_DEPENDENCIES=true
         source build/envsetup.sh
+        
+        # Пробуем вызвать lunch
         lunch omni_hot20i-userdebug
         make bootimage -j$(nproc --all)
 
