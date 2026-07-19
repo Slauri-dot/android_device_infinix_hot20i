@@ -38,7 +38,10 @@ jobs:
         cd twrp
         git config --global user.name "Builder"
         git config --global user.email "builder@twrp.me"
-        # Явно вызываем repo по полному пути
+        # ЭТИ ДВЕ СТРОЧКИ ПРИНУДИТЕЛЬНО ВКЛЮЧАЮТ HTTPS
+        git config --global url."https://github.com/".insteadOf git://github.com/
+        git config --global advice.detachedHead false
+        
         /usr/local/bin/repo init --depth=1 -u https://github.com/Minimal-TWRP-Arm64/platform_manifest_twrp_aosp.git -b twrp-12.1
         /usr/local/bin/repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
 
