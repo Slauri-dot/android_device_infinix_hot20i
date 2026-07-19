@@ -54,12 +54,8 @@ jobs:
     - name: Extract Kernel via Magiskboot
       run: |
         cd twrp/device/infinix/hot20i
-        # Скачиваем официальный Magisk APK
-        wget https://github.com/topjohnwu/Magisk/releases/download/v27.0/Magisk-v27.0.apk
-        # Распаковываем только нужный бинарник для arm64
-        unzip Magisk-v27.0.apk lib/arm64-v8a/libmagiskboot.so
-        # Переименовываем в magiskboot и даем права на исполнение
-        mv lib/arm64-v8a/libmagiskboot.so magiskboot
+        # Скачиваем бинарник magiskboot, скомпилированный под x86_64 Linux
+        wget https://github.com/chengeer/magiskboot-x86_64/raw/main/magiskboot
         chmod +x magiskboot
         
         # Распаковываем бут
@@ -72,8 +68,8 @@ jobs:
           mv kernel-dtb kernel
         fi
         
-        # Чистим временные файлы (удалили Magisk-v27.0.apk и папку lib)
-        rm -rf Magisk-v27.0.apk lib ramdisk.cpio dtb extra magiskboot
+        # Чистим временные файлы
+        rm -rf ramdisk.cpio dtb extra magiskboot
 
     - name: Build Boot Image
       run: |
