@@ -1,41 +1,47 @@
-name: Build TWRP with Auto-Kernel Extract
+name: Build TWRP (Docker Mode)
 
 on:
   workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+    # Запускаем сборку в изолированном контейнере со старым окружением
+    container:
+      image: ubuntu:20.04
+      options: --privileged
+
     steps:
-    - name: Maximize Build Space
-      uses: easimon/maximize-build-space@master
-      with:
-        root-reserve-mb: 10240
-        swap-size-mb: 10240
-        remove-dotnet: 'true'
-        remove-android: 'true'
-        remove-haskell: 'true'
+    - name: Set Timezone & Noninteractive
+      run: |
+        ln -sf /usr/share/zoneinfo/UTC /etc/localtime
+        echo "UTC" > /etc/timezone
+        apt-get update && apt-get install -y tzdata
+
+    - name: Install Build Dependencies
+      run: |
+        apt-get update
+        apt-get install -y g++-multilib lib32ncurses5-dev liblz4-tool libssl-dev libxml2-utils squashfs-tools xxhash toolchain-prefix-bin git git-lfs curl wget python3 python-is-python3 sudo cpio bc
 
     - name: Check Out Repo
       uses: actions/checkout@v3
 
-    - name: Set up Environment
+    - name: Set up Repo Tool
       run: |
-        sudo apt-get update
-        sudo apt-get install -y g++-multilib lib32ncurses5-dev liblz4-tool libssl-dev libxml2-utils squashfs-tools xxhash toolchain-prefix-bin utils wget
         mkdir ~/bin
         curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
         chmod a+x ~/bin/repo
-        export PATH=~/bin:$PATH
+        echo "PATH=~/bin:$PATH" » $GITHUB_ENV
 
     - name: Sync TWRP Sources
       run: |
+        export PATH=~/bin:$PATH
         mkdir twrp
         cd twrp
         git config --global user.name "Builder"
         git config --global user.email "builder@twrp.me"
-        ~/bin/repo init --depth=1 -u https://github.com/Minimal-TWRP-Arm64/platform_manifest_twrp_aosp.git -b twrp-12.1
-        ~/bin/repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
+        repo init --depth=1 -u https://github.com/Minimal-TWRP-Arm64/platform_manifest_twrp_aosp.git -b twrp-12.1
+        repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
 
     - name: Clone Device Tree
       run: |
@@ -45,22 +51,19 @@ jobs:
     - name: Extract Kernel via Magiskboot
       run: |
         cd twrp/device/infinix/hot20i
-        # Скачиваем линуксовый magiskboot для распаковки
         wget https://github.com/jm7181/magiskboot-binaries/raw/main/magiskboot
         chmod +x magiskboot
-        # Распаковываем стоковый бут, закинутый юзером
         ./magiskboot unpack boot.img
-        # Переименовываем полученное ядро в то, что требует компилятор
         if [ -f kernel ]; then
           echo "Kernel extracted successfully!"
         elif [ -f kernel-dtb ]; then
           mv kernel-dtb kernel
         fi
-        # Чистим мусор, оставляя только нужное ядро
         rm -rf ramdisk.cpio dtb extra magiskboot
 
     - name: Build Boot Image
       run: |
+        export PATH=~/bin:$PATH
         cd twrp
         export ALLOW_MISSING_DEPENDENCIES=true
         . build/envsetup.sh
