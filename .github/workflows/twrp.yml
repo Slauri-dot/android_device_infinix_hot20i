@@ -1,4 +1,4 @@
-name: Build TWRP
+name: Build TWRP with Auto-Kernel Extract
 
 on:
   workflow_dispatch:
@@ -22,7 +22,7 @@ jobs:
     - name: Set up Environment
       run: |
         sudo apt-get update
-        sudo apt-get install -y g++-multilib lib32ncurses5-dev liblz4-tool libssl-dev libxml2-utils squashfs-tools xxhash toolchain-prefix-bin utils
+        sudo apt-get install -y g++-multilib lib32ncurses5-dev liblz4-tool libssl-dev libxml2-utils squashfs-tools xxhash toolchain-prefix-bin utils wget
         mkdir ~/bin
         curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
         chmod a+x ~/bin/repo
@@ -42,6 +42,23 @@ jobs:
         cd twrp
         git clone https://github.com/${{ github.repository }} device/infinix/hot20i
 
+    - name: Extract Kernel via Magiskboot
+      run: |
+        cd twrp/device/infinix/hot20i
+        # Скачиваем линуксовый magiskboot для распаковки
+        wget https://github.com/jm7181/magiskboot-binaries/raw/main/magiskboot
+        chmod +x magiskboot
+        # Распаковываем стоковый бут, закинутый юзером
+        ./magiskboot unpack boot.img
+        # Переименовываем полученное ядро в то, что требует компилятор
+        if [ -f kernel ]; then
+          echo "Kernel extracted successfully!"
+        elif [ -f kernel-dtb ]; then
+          mv kernel-dtb kernel
+        fi
+        # Чистим мусор, оставляя только нужное ядро
+        rm -rf ramdisk.cpio dtb extra magiskboot
+
     - name: Build Boot Image
       run: |
         cd twrp
@@ -53,5 +70,5 @@ jobs:
     - name: Upload Result
       uses: actions/upload-artifact@v3
       with:
-        name: TWRP-Boot
+        name: TWRP-Boot-Infinix
         path: twrp/out/target/product/hot20i/boot.img
