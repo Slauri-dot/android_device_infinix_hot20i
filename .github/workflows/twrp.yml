@@ -72,11 +72,13 @@ jobs:
         rm -rf ramdisk.cpio dtb extra magiskboot
 
     - name: Build Boot Image
+      # Принудительно заставляем этот шаг выполняться в bash, а не в sh
+      shell: bash
       run: |
-        export PATH=~/bin:$PATH
+        export PATH=/usr/local/bin:$PATH
         cd twrp
         export ALLOW_MISSING_DEPENDENCIES=true
-        . build/envsetup.sh
+        source build/envsetup.sh
         lunch omni_hot20i-userdebug
         make bootimage -j$(nproc --all)
 
