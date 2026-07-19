@@ -14,8 +14,8 @@ jobs:
     steps:
     - name: Install System Tools (rsync & unzip)
       run: |
-        sudo apt-get update
-        sudo apt-get install -y rsync unzip
+        apt-get update
+        apt-get install -y rsync unzip
     
     - name: Set Timezone & Noninteractive
       run: |
