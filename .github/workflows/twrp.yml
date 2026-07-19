@@ -12,6 +12,11 @@ jobs:
       options: --privileged
 
     steps:
+    - name: Install System Tools (rsync & unzip)
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y rsync unzip
+    
     - name: Set Timezone & Noninteractive
       run: |
         ln -sf /usr/share/zoneinfo/UTC /etc/localtime
@@ -21,7 +26,7 @@ jobs:
     - name: Install Build Dependencies
       run: |
         apt-get update
-        apt-get install -y g++-multilib lib32ncurses5-dev liblz4-tool libssl-dev libxml2-utils squashfs-tools xxhash git git-lfs curl wget python3 python-is-python3 sudo cpio bc unzip
+        apt-get install -y g++-multilib lib32ncurses5-dev liblz4-tool libssl-dev libxml2-utils squashfs-tools xxhash git git-lfs curl wget python3 python-is-python3 sudo cpio bc
 
     - name: Check Out Repo
       uses: actions/checkout@v4
@@ -74,9 +79,6 @@ jobs:
     - name: Build Boot Image
       shell: bash
       run: |
-        # Устанавливаем rsync, без которого ninja не может упаковать ramdisk
-        sudo apt-get update && sudo apt-get install -y rsync
-        
         export PATH=/usr/local/bin:$PATH
         cd twrp
         
