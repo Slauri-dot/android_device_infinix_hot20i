@@ -54,9 +54,9 @@ jobs:
     - name: Extract Kernel via Magiskboot
       run: |
         cd twrp/device/infinix/hot20i
-        # Скачиваем бинарник magiskboot, скомпилированный под x86_64 Linux
-        wget https://github.com/Shubhamvis98/AIK/raw/4ac321dfd48e16344e6146c505708aa720ff0bb3/bin/magiskboot_x86
-        chmod +x magiskboot_x86
+        # Скачиваем x86 бинарник и сразу принудительно сохраняем его как 'magiskboot'
+        wget -O magiskboot https://github.com/Shubhamvis98/AIK/raw/4ac321dfd48e16344e6146c505708aa720ff0bb3/bin/magiskboot_x86
+        chmod +x magiskboot
         
         # Распаковываем бут
         ./magiskboot unpack boot.img
@@ -69,7 +69,7 @@ jobs:
         fi
         
         # Чистим временные файлы
-        rm -rf ramdisk.cpio dtb extra magiskboot_x86
+        rm -rf ramdisk.cpio dtb extra magiskboot
 
     - name: Build Boot Image
       run: |
