@@ -40,13 +40,10 @@ jobs:
         cd twrp
         git config --global user.name "Builder"
         git config --global user.email "builder@twrp.me"
-        
-        # Сбрасываем старые подмены, чтобы они не мешали внутренним механизмам repo
-        git config --global --unset-all url."https://${GH_TOKEN}@github.com/".insteadOf || true
-        
-        # Передаем токен ПРЯМО в URL манифеста и отключаем самообновление repo
-        /usr/local/bin/repo init --no-repo-verify --depth=1 -u https://${GH_TOKEN}@github.com/Minimal-TWRP-Arm64/platform_manifest_twrp_aosp.git -b twrp-12.1
-        
+
+        # Используем официальный рабочий манифест TWRP вместо удаленного
+        /usr/local/bin/repo init --depth=1 -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-12.1
+
         /usr/local/bin/repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
 
     - name: Clone Device Tree
