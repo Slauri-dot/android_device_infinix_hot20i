@@ -1,0 +1,2 @@
+add_lunch_combo omni_hot20i-userdebug
+add_lunch_combo omni_hot20i-eng
