@@ -74,6 +74,9 @@ jobs:
     - name: Build Boot Image
       shell: bash
       run: |
+        # Устанавливаем rsync, без которого ninja не может упаковать ramdisk
+        sudo apt-get update && sudo apt-get install -y rsync
+        
         export PATH=/usr/local/bin:$PATH
         cd twrp
         
@@ -84,7 +87,7 @@ jobs:
         touch vendor/omni/config/common.mk
         export BOARD_KERNEL_IMAGE_NAME=Image.gz
         
-        # ХАК: Принудительно создаем выходную папку и копируем туда ранее извлеченное ядро
+        # Подкладываем ядро
         mkdir -p out/target/product/hot20i/
         cp device/infinix/hot20i/kernel out/target/product/hot20i/kernel
         
