@@ -24,7 +24,7 @@ jobs:
         apt-get install -y g++-multilib lib32ncurses5-dev liblz4-tool libssl-dev libxml2-utils squashfs-tools xxhash toolchain-prefix-bin git git-lfs curl wget python3 python-is-python3 sudo cpio bc
 
     - name: Check Out Repo
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up Repo Tool
       run: |
@@ -71,7 +71,7 @@ jobs:
         make bootimage -j$(nproc --all)
 
     - name: Upload Result
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: TWRP-Boot-Infinix
         path: twrp/out/target/product/hot20i/boot.img
