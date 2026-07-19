@@ -77,18 +77,17 @@ jobs:
         export PATH=/usr/local/bin:$PATH
         cd twrp
         
-        # 1. Заглушка для embedded.mk (уже проверенная)
+        # Старые проверенные хаки-заглушки
         mkdir -p build/make/target/product/
         touch build/make/target/product/embedded.mk
-        
-        # 2. Хак-заглушка для vendor/omni, чтобы обойти ошибку
         mkdir -p vendor/omni/config/
         touch vendor/omni/config/common.mk
         
+        # ХАК: Принудительно задаем имя образа ядра для сборочной системы
+        export BOARD_KERNEL_IMAGE_NAME=Image.gz
+        
         export ALLOW_MISSING_DEPENDENCIES=true
         source build/envsetup.sh
-        
-        # Пробуем вызвать lunch
         lunch omni_hot20i-userdebug
         make bootimage -j$(nproc --all)
 
