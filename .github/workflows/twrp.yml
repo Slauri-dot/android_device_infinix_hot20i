@@ -77,40 +77,40 @@ jobs:
         rm -rf ramdisk.cpio dtb extra magiskboot
 
         - name: Build Boot Image
-      shell: bash
-      run: |
-        export PATH=/usr/local/bin:$PATH
-        cd twrp
-        
-        # Заглушки
-        mkdir -p build/make/target/product/
-        touch build/make/target/product/embedded.mk
-        mkdir -p vendor/omni/config/
-        touch vendor/omni/config/common.mk
-        export BOARD_KERNEL_IMAGE_NAME=Image.gz
-        
-        # Ядро
-        mkdir -p out/target/product/hot20i/
-        cp device/infinix/hot20i/kernel out/target/product/hot20i/kernel
-        
-        # Жёсткий фикс - чистим вообще всё связанное с recovery и vendor
-        rm -rf out/target/product/hot20i/recovery
-        rm -rf out/target/product/hot20i/root/vendor
-        rm -rf out/target/product/hot20i/obj/PACKAGING/recovery_intermediates
-        
-        export ALLOW_MISSING_DEPENDENCIES=true
-        source build/envsetup.sh
-        lunch omni_hot20i-userdebug
-        
-        # Пробуем собрать
-        make -j$(nproc --all) bootimage 2>&1 | tee build.log
-        
-        # Если упало - смотрим логи
-        if [ ${PIPESTATUS[0]} -ne 0 ]; then
-          echo "Build failed, checking logs..."
-          grep -A 5 "rsync\|vendor\|error" build.log
-          exit 1
-        fi
+          shell: bash
+          run: |
+            export PATH=/usr/local/bin:$PATH
+            cd twrp
+            
+            # Заглушки
+            mkdir -p build/make/target/product/
+            touch build/make/target/product/embedded.mk
+            mkdir -p vendor/omni/config/
+            touch vendor/omni/config/common.mk
+            export BOARD_KERNEL_IMAGE_NAME=Image.gz
+            
+            # Ядро
+            mkdir -p out/target/product/hot20i/
+            cp device/infinix/hot20i/kernel out/target/product/hot20i/kernel
+            
+            # Жёсткий фикс - чистим вообще всё связанное с recovery и vendor
+            rm -rf out/target/product/hot20i/recovery
+            rm -rf out/target/product/hot20i/root/vendor
+            rm -rf out/target/product/hot20i/obj/PACKAGING/recovery_intermediates
+            
+            export ALLOW_MISSING_DEPENDENCIES=true
+            source build/envsetup.sh
+            lunch omni_hot20i-userdebug
+            
+            # Пробуем собрать
+            make -j$(nproc --all) bootimage 2>&1 | tee build.log
+            
+            # Если упало - смотрим логи
+            if [ ${PIPESTATUS[0]} -ne 0 ]; then
+              echo "Build failed, checking logs..."
+              grep -A 5 "rsync\|vendor\|error" build.log
+              exit 1
+            fi
 
     - name: Upload Result
       uses: actions/upload-artifact@v4
