@@ -1,0 +1,57 @@
+name: Build TWRP
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Maximize Build Space
+      uses: easimon/maximize-build-space@master
+      with:
+        root-reserve-mb: 10240
+        swap-size-mb: 10240
+        remove-dotnet: 'true'
+        remove-android: 'true'
+        remove-haskell: 'true'
+
+    - name: Check Out Repo
+      uses: actions/checkout@v3
+
+    - name: Set up Environment
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y g++-multilib lib32ncurses5-dev liblz4-tool libssl-dev libxml2-utils squashfs-tools xxhash toolchain-prefix-bin utils
+        mkdir ~/bin
+        curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+        chmod a+x ~/bin/repo
+        export PATH=~/bin:$PATH
+
+    - name: Sync TWRP Sources
+      run: |
+        mkdir twrp
+        cd twrp
+        git config --global user.name "Builder"
+        git config --global user.email "builder@twrp.me"
+        ~/bin/repo init --depth=1 -u https://github.com/Minimal-TWRP-Arm64/platform_manifest_twrp_aosp.git -b twrp-12.1
+        ~/bin/repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
+
+    - name: Clone Device Tree
+      run: |
+        cd twrp
+        git clone https://github.com/${{ github.repository }} device/infinix/hot20i
+
+    - name: Build Boot Image
+      run: |
+        cd twrp
+        export ALLOW_MISSING_DEPENDENCIES=true
+        . build/envsetup.sh
+        lunch omni_hot20i-userdebug
+        make bootimage -j$(nproc --all)
+
+    - name: Upload Result
+      uses: actions/upload-artifact@v3
+      with:
+        name: TWRP-Boot
+        path: twrp/out/target/product/hot20i/boot.img
