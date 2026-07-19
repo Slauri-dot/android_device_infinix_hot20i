@@ -77,14 +77,16 @@ jobs:
         export PATH=/usr/local/bin:$PATH
         cd twrp
         
-        # Старые проверенные хаки-заглушки
+        # Заглушки для обхода ошибок манифеста
         mkdir -p build/make/target/product/
         touch build/make/target/product/embedded.mk
         mkdir -p vendor/omni/config/
         touch vendor/omni/config/common.mk
-        
-        # ХАК: Принудительно задаем имя образа ядра для сборочной системы
         export BOARD_KERNEL_IMAGE_NAME=Image.gz
+        
+        # ХАК: Принудительно создаем выходную папку и копируем туда ранее извлеченное ядро
+        mkdir -p out/target/product/hot20i/
+        cp device/infinix/hot20i/kernel out/target/product/hot20i/kernel
         
         export ALLOW_MISSING_DEPENDENCIES=true
         source build/envsetup.sh
