@@ -34,3 +34,14 @@ TW_THEME := portrait_hdpi
 RECOVERY_SDCARD_ON_DATA := true
 TW_EXCLUDE_DEFAULT_USB_INIT := true
 TW_EXTRA_FLAVOR := "Infinix Hot 20i Custom TWRP"
+
+# Точный размер boot-раздела Infinix Hot 20i (32 МБ)
+BOARD_BOOTIMAGE_PARTITION_SIZE := 33554432
+
+# Отключаем тяжелые модули очистки и шифрования на этапе сборки ядра/рамдиска
+TW_INCLUDE_CRYPTO := false
+TW_INCLUDE_CRYPTO_FSCRYPT := false
+TW_EXCLUDE_DEFAULT_USB_INIT := true
+
+# Сжатие LZMA / LZ4 для рамдиска (сжимает намного сильнее стандартного GZIP)
+BOARD_RAMDISK_USE_LZ4 := true
