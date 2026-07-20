@@ -89,10 +89,8 @@ jobs:
         mkdir -p out/target/product/hot20i/
         cp device/infinix/hot20i/kernel out/target/product/hot20i/kernel
         
-        # Фикс конфликта rsync / symlink vendor
-        # Удаляем папки, в которых создаются конфликтующие структуры перед сборкой ramdisk
-        rm -rf out/target/product/hot20i/root/vendor
-        rm -rf out/target/product/hot20i/recovery
+        # Главный фикс: добавляем --force в rsync внутри Makefile сборщика
+        sed -i 's/rsync -a/rsync -a --force/g' build/make/core/Makefile
         
         export ALLOW_MISSING_DEPENDENCIES=true
         source build/envsetup.sh
