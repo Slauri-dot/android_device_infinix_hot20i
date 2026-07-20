@@ -57,23 +57,19 @@ jobs:
         git clone https://github.com/${{ github.repository }} device/infinix/hot20i
 
     - name: Extract Kernel via Magiskboot
+      shell: bash
       run: |
         cd twrp/device/infinix/hot20i
-        # Скачиваем x86 бинарник и сразу принудительно сохраняем его как 'magiskboot'
         wget -O magiskboot https://github.com/Shubhamvis98/AIK/raw/4ac321dfd48e16344e6146c505708aa720ff0bb3/bin/magiskboot_x86
         chmod +x magiskboot
-        
-        # Распаковываем бут
         ./magiskboot unpack boot.img
         
-        # Подсовываем ядро компилятору
         if [ -f kernel ]; then
           echo "Kernel extracted successfully!"
         elif [ -f kernel-dtb ]; then
           mv kernel-dtb kernel
         fi
         
-        # Чистим временные файлы
         rm -rf ramdisk.cpio dtb extra magiskboot
 
     - name: Build Boot Image
@@ -82,7 +78,7 @@ jobs:
         export PATH=/usr/local/bin:$PATH
         cd twrp
         
-        # Заглушки для обхода ошибок манифеста
+        # Заглушки для AOSP/Omni
         mkdir -p build/make/target/product/
         touch build/make/target/product/embedded.mk
         mkdir -p vendor/omni/config/
