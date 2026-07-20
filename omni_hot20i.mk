@@ -15,11 +15,20 @@ PRODUCT_MANUFACTURER := infinix
 
 PRODUCT_RELEASE_NAME := Infinix Hot 20i
 
-# Включаем только нужные языки (Английский + Русский)
+# Отключаем встроенные приложения и утилиты
+TW_EXCLUDE_TWRPAPP := true
+TW_EXCLUDE_SUPERSU := true
+TW_EXCLUDE_PYTHON := true
+TW_EXCLUDE_NANO := true
+TW_EXCLUDE_BASH := true
+TW_INCLUDE_CRYPTO := false
+TW_INCLUDE_CRYPTO_FSCRYPT := false
+TW_INCLUDE_NTFS_3G := false
+TW_INCLUDE_FUSE_EXFAT := false
+
+# Отключаем лишние языковые пакеты и темы высокой четкости
 TW_EXTRA_LANGUAGES := false
 TW_DEFAULT_LANGUAGE := ru
 
-# Ограничиваем графику и шрифты, чтобы не раздувать рамдиск
-TW_INCLUDE_NTFS_3G := false
-TW_EXCLUDE_SUPERSU := true
-TW_EXCLUDE_TWRPAPP := true
+# Оптимизация бинарников (использовать единый toybox/toolbox вместо отдельных утилит)
+TW_USE_TOOLBOX := true
