@@ -89,6 +89,10 @@ jobs:
         mkdir -p out/target/product/hot20i/
         cp device/infinix/hot20i/kernel out/target/product/hot20i/kernel
         
+        # ХАК: Очищаем старый конфликтный recovery-рамдиск, чтобы rsync не спотыкался об симлинки
+        rm -rf out/target/product/hot20i/recovery
+        rm -rf out/target/product/hot20i/root
+        
         export ALLOW_MISSING_DEPENDENCIES=true
         source build/envsetup.sh
         lunch omni_hot20i-userdebug
