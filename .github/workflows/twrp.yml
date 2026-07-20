@@ -85,11 +85,14 @@ jobs:
         touch vendor/omni/config/common.mk
         export BOARD_KERNEL_IMAGE_NAME=Image.gz
         
+        # Указываем размер раздела boot (64 МБ = 67108864 байт)
+        export BOARD_BOOTIMAGE_PARTITION_SIZE=67108864
+        
         # Подкладываем ядро
         mkdir -p out/target/product/hot20i/
         cp device/infinix/hot20i/kernel out/target/product/hot20i/kernel
         
-        # Главный фикс: добавляем --force в rsync внутри Makefile сборщика
+        # Патчим Makefile для корректной работы rsync
         sed -i 's/rsync -a/rsync -a --force/g' build/make/core/Makefile
         
         export ALLOW_MISSING_DEPENDENCIES=true
