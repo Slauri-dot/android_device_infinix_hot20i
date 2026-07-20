@@ -14,3 +14,12 @@ PRODUCT_MODEL := Infinix Hot 20i
 PRODUCT_MANUFACTURER := infinix
 
 PRODUCT_RELEASE_NAME := Infinix Hot 20i
+
+# Включаем только нужные языки (Английский + Русский)
+TW_EXTRA_LANGUAGES := false
+TW_DEFAULT_LANGUAGE := ru
+
+# Ограничиваем графику и шрифты, чтобы не раздувать рамдиск
+TW_INCLUDE_NTFS_3G := false
+TW_EXCLUDE_SUPERSU := true
+TW_EXCLUDE_TWRPAPP := true
