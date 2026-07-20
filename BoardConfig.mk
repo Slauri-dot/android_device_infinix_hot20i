@@ -43,5 +43,6 @@ TW_INCLUDE_CRYPTO := false
 TW_INCLUDE_CRYPTO_FSCRYPT := false
 TW_EXCLUDE_DEFAULT_USB_INIT := true
 
-# Сжатие LZMA / LZ4 для рамдиска (сжимает намного сильнее стандартного GZIP)
-BOARD_RAMDISK_USE_LZ4 := true
+# Включаем сильное сжатие LZMA для ramdisk recovery
+LZMA_RAMDISK_TARGETS := recovery
+BOARD_RAMDISK_USE_LZMA := true
